@@ -30,7 +30,8 @@ public class BasePageObject extends TestBase {
         return value;
     }
 
-    public void clearField(){
+    public void clearField()
+    {
         getWebElement(getLocator()).clear();
     }
 }

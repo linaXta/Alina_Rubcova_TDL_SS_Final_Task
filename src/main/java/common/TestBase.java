@@ -9,19 +9,17 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 public class TestBase {
-    private final String url = "https://www.globalsqa.com/demo-site/";
+    //private final String url = "https://www.globalsqa.com/demo-site/";
 
-    private ConfigfileReader configfileReader = new ConfigfileReader();
+    private ConfigFileReader configFileReader = new ConfigFileReader();
+    private final String url = configFileReader.getUrl();
 
-    public ConfigfileReader getConfigfileReader(){
-        return this.configfileReader;
+    public ConfigFileReader getConfig()
+    {
+        return this.configFileReader;
     }
 
     private static WebDriver driver;
-
-    public ConfigfileReader getConfig() {
-        return this.configfileReader;
-    }
 
     public void openUrl(){
         getDriver().get(url);
@@ -37,10 +35,19 @@ public class TestBase {
         return this.driver;
     }
 
+    public void openAutoCompleteUrl() {
+        getDriver().get(url + "auto-complete/");
+    }
+
     public void closeDriver(){
         getDriver().close();
         getDriver().quit();
+        System.out.println("Driver closed sucsesfully");
     }
+
+//    public By getLinkByHref(String hrefValue) {
+//        return By.cssSelector("a[href='" + hrefValue + "']");
+//    }
 
     public WebElement getWebElement(String locator){
         //#signInButton in devtools
