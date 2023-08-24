@@ -14,7 +14,6 @@ import java.io.IOException;
 
 public class Task1 extends TestBase {
 
-    //TODO netiek izmantots
     private WebDriver driver;
     static ExtentReports report;
 
@@ -67,7 +66,6 @@ public class Task1 extends TestBase {
             test.log(Status.INFO, "DialogBoxes Page  is NOT visible");
         }
 
-
         if (dialogBoxesPage.isInitialized()) {
             test.log(Status.INFO, "'Create User' button is visible");
             //dialogBoxesPage.clickCreateUserButton(); vai
@@ -88,18 +86,36 @@ public class Task1 extends TestBase {
             dialogBoxesPage.name.enterTextValue("Test1");
             dialogBoxesPage.email.enterTextValue("test1@test.com");
             dialogBoxesPage.password.enterTextValue("test1");
+            //7. Log screenshot with filled fields/output in the console the text each field has
+
+            //8. Click on button [Create an account]
+            dialogBoxesPage.createAnUserButton.click();
 
             // Log the new values to the console
+            String createdName = dialogBoxesPage.nameValidate.getValue();
+            String createdEmail = dialogBoxesPage.emailValidate.getValue();
+            String createdPassword = dialogBoxesPage.passwordValidate.getValue();
+
             System.out.println("After entering new values:");
+            System.out.println("Name: " + createdName);
+            System.out.println("Email: " + createdEmail);
+            System.out.println("Password: " + createdPassword);
 
-
-            //TODO turinājums šeit
+            //9. Validate that a new entry is shown in the [Existing users] section and that
+            //the new entry contains the data you entered in the text fields
+            boolean isNewEntryVisible = dialogBoxesPage.isNewEntryVisible(createdName, createdEmail, createdPassword);
+            if (isNewEntryVisible) {
+                test.log(Status.PASS, "New entry is shown in the [Existing users] section.");
+            } else {
+                test.log(Status.FAIL, "New entry is NOT shown in the [Existing users] section.");
+            }
 
             closeDriver();
         } else {
             test.log(Status.INFO, "'Create User' button is NOT visible");
         }
         closeDriver();
+        test.log(Status.INFO, "Test 1 ended");
     }
 
     @Test(description = "Tabs test, open section 2")
@@ -116,7 +132,6 @@ public class Task1 extends TestBase {
             test2.log(Status.INFO, "Home page is NOT visible");
         }
 
-
         homePage.tabsButton.click();
 
         TabsPage tabsPage = new TabsPage();
@@ -130,32 +145,29 @@ public class Task1 extends TestBase {
 
         tabsPage.section2Button.click();
 
-/*
-        //TODO japabveidz
         // Step 4: Validate that Section 2 is open/expanded
-        if(tabsPage.section2.isExpanded()) {
+        WebElement section2Header = driver.findElement(By.xpath("//h3[text()='Section 2']"));
+        String ariaExpanded = section2Header.getAttribute("aria-expanded");
+
+        if (ariaExpanded.equals("true")) {
             test2.log(Status.INFO, "Section 2 is open/expanded");
         } else {
             test2.log(Status.INFO, "Section 2 is NOT open/expanded");
         }
 
         // Step 5: Validate the text of the section and log it
-        String expectedSectionText = "Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In suscipit faucibus urna.";
-        String sectionText = tabsPage.section2.getText();
-        if(sectionText.equals(expectedSectionText)) {
-            test2.log(Status.INFO, "Text of Section 2 matches the expected text:\n" + sectionText);
+        String expectedText = "Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In suscipit faucibus urna.";
+
+        String actualText = tabsPage.getSection2Text();
+
+        if (actualText.equals(expectedText)) {
+            test2.log(Status.INFO, "Section 2 text matches the expected text: " + actualText);
         } else {
-            test2.log(Status.INFO, "Section 2 text does not match the expected text");
-            test2.log(Status.INFO, "Expected text:\n" + expectedSectionText);
-            test2.log(Status.INFO, "Actual text:\n" + sectionText);
+            test2.log(Status.INFO, "Section 2 text does not match the expected text.\nExpected: " + expectedText + "\nActual: " + actualText);
         }
 
-        // Log the screenshot or output the text to the console
-        // You can capture a screenshot using the WebDriver's capabilities
-        // and log it using ExtentReport's attachScreenCapture() method.
-        // Similarly, you can use System.out.println() to output the text to the console.
-*/
         closeDriver();
+        test2.log(Status.INFO, "Test 2 ended");
     }
 
     @Test(description = "Testing progress bar" )
@@ -225,9 +237,9 @@ public class Task1 extends TestBase {
             test3.log(Status.INFO, "Change color button was NOT clicked sucsesfully");
         }
 
-
         //5. Click on button [Random Value - Determinate]
         progressBarPage.randomValueButton.click();
+
         //6. Log screenshot/output in the console the value(percentage) of the progress
         //bar, and the rgb value of the color
         //*Create a method that converts the rgb value of the color in a color name and
@@ -240,6 +252,7 @@ public class Task1 extends TestBase {
         test3.log(Status.INFO, "RGB value of the color: " + colorValue);
 
         closeDriver();
+        test3.log(Status.INFO, "Test 3 ended");
     }
 
     @Test(description = "Testing message box" )
@@ -272,12 +285,28 @@ public class Task1 extends TestBase {
 
         //4. In the 'Download complete' message box, click on button [OK]
         dialogBoxesPage.okButton.click();
-        //5. Validate that the [Message box] is no longer displayed
-        //6. Click on tab [FORM]
-        //7. Click on tab [MESSAGE BOX]
-        //8. Validate that the [Message box] is no longer displayed
 
+        //5. Validate that the [Message box] is no longer displayed
+        if (!dialogBoxesPage.isMessageBoxVisible()) {
+            test4.log(Status.INFO, "Message box is no longer displayed");
+        } else {
+            test4.log(Status.INFO, "Message box is still displayed");
+        }
+
+        //6. Click on tab [FORM]
+        dialogBoxesPage.formTabButton.click();
+
+        //7. Click on tab [MESSAGE BOX]
+        dialogBoxesPage.messageBoxButton.click();
+
+        //8. Validate that the [Message box] is no longer displayed
+        if (!dialogBoxesPage.isMessageBoxVisible()) {
+            test4.log(Status.INFO, "Message box is no longer displayed");
+        } else {
+            test4.log(Status.INFO, "Message box is still displayed");
+        }
         closeDriver();
+        test4.log(Status.INFO, "Test 4 ended");
     }
 
     @Test(description = "Testing auto-copmlete" )
@@ -308,6 +337,7 @@ public class Task1 extends TestBase {
             test5.log(Status.INFO, "Failed to save screenshot: " + e.getMessage());
         }
         closeDriver();
+        test5.log(Status.INFO, "Test 5 ended");
     }
 
     @AfterClass
