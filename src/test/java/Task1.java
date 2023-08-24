@@ -3,7 +3,8 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import common.TestBase;
-import org.openqa.selenium.WebDriver;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -65,11 +66,7 @@ public class Task1 extends TestBase {
         } else {
             test.log(Status.INFO, "DialogBoxes Page  is NOT visible");
         }
-        AddsPage addsPage = new AddsPage();
-        if (addsPage.addsCloseButton.isButtonPresent()) {
-            addsPage.closeAdd();
-            test.log(Status.INFO, "Add poped out, and was closed sucsessfully");
-        }
+
 
         if (dialogBoxesPage.isInitialized()) {
             test.log(Status.INFO, "'Create User' button is visible");
@@ -95,6 +92,7 @@ public class Task1 extends TestBase {
             // Log the new values to the console
             System.out.println("After entering new values:");
 
+
             //TODO turinājums šeit
 
             closeDriver();
@@ -118,17 +116,10 @@ public class Task1 extends TestBase {
             test2.log(Status.INFO, "Home page is NOT visible");
         }
 
+
         homePage.tabsButton.click();
 
         TabsPage tabsPage = new TabsPage();
-        AddsPage addsPage = new AddsPage();
-        if(addsPage.addsCloseButton.isButtonPresent()){
-            test2.log(Status.INFO, "Add poped out and Add was closed");
-            addsPage.closeAdd();
-        }
-        else {
-            test2.log(Status.INFO, "No adds poped out");
-        }
 
         if(tabsPage.section2Button.isButtonPresent()){
             test2.log(Status.INFO, "Tabs button clicked and Tabs page is visible");
@@ -138,9 +129,32 @@ public class Task1 extends TestBase {
         }
 
         tabsPage.section2Button.click();
-        //4.Validate that the Section 2 is open/expanded and the text of the section is visible
-        //5. Log screenshot/output in the console the text of the section
 
+/*
+        //TODO japabveidz
+        // Step 4: Validate that Section 2 is open/expanded
+        if(tabsPage.section2.isExpanded()) {
+            test2.log(Status.INFO, "Section 2 is open/expanded");
+        } else {
+            test2.log(Status.INFO, "Section 2 is NOT open/expanded");
+        }
+
+        // Step 5: Validate the text of the section and log it
+        String expectedSectionText = "Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In suscipit faucibus urna.";
+        String sectionText = tabsPage.section2.getText();
+        if(sectionText.equals(expectedSectionText)) {
+            test2.log(Status.INFO, "Text of Section 2 matches the expected text:\n" + sectionText);
+        } else {
+            test2.log(Status.INFO, "Section 2 text does not match the expected text");
+            test2.log(Status.INFO, "Expected text:\n" + expectedSectionText);
+            test2.log(Status.INFO, "Actual text:\n" + sectionText);
+        }
+
+        // Log the screenshot or output the text to the console
+        // You can capture a screenshot using the WebDriver's capabilities
+        // and log it using ExtentReport's attachScreenCapture() method.
+        // Similarly, you can use System.out.println() to output the text to the console.
+*/
         closeDriver();
     }
 
@@ -192,12 +206,38 @@ public class Task1 extends TestBase {
 
         //4. Click on button [Random Color]
         progressBarPage.randomColorButton.click();//nenostrada jo ir iframe
+        WebElement progressBar = driver.findElement(By.cssSelector("div.ui-progressbar-value"));
+
+        // Get the "style" attribute value before and after the action
+        String initialStyle = progressBar.getAttribute("style");
+
+        //Change the color
+        progressBarPage.randomColorButton.click();//nenostrada jo ir iframe
+
+        // Get the "style" attribute value after the action
+        String changedStyle = progressBar.getAttribute("style");
+
+        // Compare the initial style with the changed style
+        if(!initialStyle.equals(changedStyle)){
+            test3.log(Status.INFO, "Change color button was clicked sucsesfully");
+        }
+        else {
+            test3.log(Status.INFO, "Change color button was NOT clicked sucsesfully");
+        }
+
 
         //5. Click on button [Random Value - Determinate]
+        progressBarPage.randomValueButton.click();
         //6. Log screenshot/output in the console the value(percentage) of the progress
         //bar, and the rgb value of the color
         //*Create a method that converts the rgb value of the color in a color name and
         //outputs that in the console instead, example: “Color of the progress bar: red
+
+        // 6. Log value(percentage) of the progress bar and the rgb value of the color
+        String progressBarStyle = progressBar.getAttribute("style");
+        String colorValue = progressBarPage.extractRgbValueFromStyle(progressBarStyle);
+
+        test3.log(Status.INFO, "RGB value of the color: " + colorValue);
 
         closeDriver();
     }
@@ -231,6 +271,7 @@ public class Task1 extends TestBase {
         dialogBoxesPage.messageBoxButton.click();
 
         //4. In the 'Download complete' message box, click on button [OK]
+        dialogBoxesPage.okButton.click();
         //5. Validate that the [Message box] is no longer displayed
         //6. Click on tab [FORM]
         //7. Click on tab [MESSAGE BOX]
@@ -239,7 +280,7 @@ public class Task1 extends TestBase {
         closeDriver();
     }
 
-    @Test(description = "Testing Search Field" )
+    @Test(description = "Testing auto-copmlete" )
     private void searcTesting(){
         ExtentTest test5 = report.createTest("Testing Search Field - Test 5");
         test5.log(Status.INFO, "Test 5 started");
@@ -247,9 +288,25 @@ public class Task1 extends TestBase {
         openAutoCompleteUrl();
 
         //2. In field ‘Search’ fill in phrase ‘and'
-        //3. In dropdown menu select value'anders andersson'
-        //4. Log a screenshot/output in the console the selected value
+        SearcPage searcPage = new SearcPage();
+        searcPage.searchForValue();
 
+        //3. In dropdown menu select value'anders andersson'
+        WebElement neededValue = driver.findElement(By.xpath("//div[@class='ui-menu-item-wrapper' and text()='anders andersson']"));
+        neededValue.click();
+
+        //4. Log a screenshot/output in the console the selected value
+        String selectedValue = neededValue.getText();
+        test5.log(Status.INFO, "Selected value: " + selectedValue);
+
+        // Capture a screenshot and log it
+        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        try {
+            FileUtils.copyFile(screenshotFile, new File("screenshot.png"));
+            test5.log(Status.INFO, "Screenshot saved: " + screenshotFile.getAbsolutePath());
+        } catch (IOException e) {
+            test5.log(Status.INFO, "Failed to save screenshot: " + e.getMessage());
+        }
         closeDriver();
     }
 

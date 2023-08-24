@@ -6,6 +6,7 @@ import pages.objects.TextField;
 public class DialogBoxesPage {
     public Button createUserButton = new Button("Create new user", "id=create-user");
     public  Button messageBoxButton = new Button("Mesage Box", "xpath=//*[@id='Message Box']");
+    public Button okButton = new Button("Ok", "xpath=/html/body/div[2]/div[3]/div/button");
 
     public TextField name = new TextField("Name", "id=name", "Initial Name Value");
     public TextField email = new TextField("Email", "id=email", "Initial Email Value");

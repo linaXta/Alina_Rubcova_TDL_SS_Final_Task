@@ -25,4 +25,11 @@ public class TextField extends BasePageObject {
         WebElement textField = getWebElement(getLocator());
         return textField.getAttribute("value");
     }
+
+    public void click(){
+        WebElement searchField = getWebElement(getLocator());
+        searchField.click();
+        System.out.println("searchField '" + getName() + "' was clicked");
+    }
+
 }

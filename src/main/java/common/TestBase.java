@@ -35,6 +35,7 @@ public class TestBase {
         return this.driver;
     }
 
+
     public void openAutoCompleteUrl() {
         getDriver().get(url + "auto-complete/");
     }
